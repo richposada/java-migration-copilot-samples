@@ -27,11 +27,14 @@ public class MainSQL {
             return;
         }
 
-        String connString = properties.getProperty("AZURE_SQLDB_CONNECTIONSTRING");
-        String clientId = properties.getProperty("AZURE_CLIENT_ID");
+        String connString = properties.getProperty("spring.datasource.url");
         
-        connString = connString + ";msiClientId=" + clientId + ";authentication=ActiveDirectoryMSI";
-        System.out.print(connString);
+        if (connString == null) {
+            System.out.println("spring.datasource.url property not found in application.properties");
+            return;
+        }
+        
+        System.out.println("Connection string: " + connString);
         
         SQLServerDataSource ds = new SQLServerDataSource();
         ds.setURL(connString);
