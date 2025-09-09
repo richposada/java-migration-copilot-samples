@@ -34,6 +34,9 @@ public class MainSQL {
             return;
         }
         
+        // Substitute environment variables in connection string
+        connString = substituteEnvironmentVariables(connString);
+        
         System.out.println("Connection string: " + connString);
         
         SQLServerDataSource ds = new SQLServerDataSource();
@@ -43,6 +46,35 @@ public class MainSQL {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Substitutes environment variables in the format ${VARIABLE_NAME} with their actual values.
+     * @param input the string containing environment variable placeholders
+     * @return the string with environment variables substituted
+     */
+    private static String substituteEnvironmentVariables(String input) {
+        if (input == null) {
+            return null;
+        }
+        
+        String result = input;
+        // Pattern to match ${VARIABLE_NAME}
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\$\\{([^}]+)\\}");
+        java.util.regex.Matcher matcher = pattern.matcher(input);
+        
+        while (matcher.find()) {
+            String envVarName = matcher.group(1);
+            String envVarValue = System.getenv(envVarName);
+            
+            if (envVarValue != null) {
+                result = result.replace(matcher.group(0), envVarValue);
+            } else {
+                System.err.println("Warning: Environment variable " + envVarName + " is not set");
+            }
+        }
+        
+        return result;
     }
 
     
