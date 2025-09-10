@@ -140,6 +140,37 @@ This application is designed to run in Azure environments that support Managed I
 - **Error Handling**: Comprehensive error handling and logging
 - **Property Validation**: Validates required configuration properties
 - **Logging**: Detailed logging for troubleshooting and monitoring
+- **Health Check Utility**: Built-in health check for monitoring and deployment validation
+
+## Running the Application
+
+### Main Application
+
+```bash
+# Run the main application
+java -jar target/demo-1.0-SNAPSHOT.jar
+
+# Or run the main class directly
+java -cp target/classes com.example.MainSQL
+```
+
+### Health Check Utility
+
+The application includes a health check utility that can be used for monitoring and deployment validation:
+
+```bash
+# Run health check
+java -cp target/classes com.example.util.HealthCheck
+
+# Health check will exit with code 0 for success, 1 for failure
+# Perfect for monitoring scripts and deployment pipelines
+```
+
+The health check provides:
+- Connection validation with response time measurement
+- Detailed error reporting and logging
+- Exit codes for automation and monitoring systems
+- Lightweight operation suitable for frequent monitoring
 
 ## Troubleshooting
 
