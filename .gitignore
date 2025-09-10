@@ -58,3 +58,6 @@ build/
 .vscode/
 
 /logs/
+
+# Maven shade plugin artifacts
+dependency-reduced-pom.xml
