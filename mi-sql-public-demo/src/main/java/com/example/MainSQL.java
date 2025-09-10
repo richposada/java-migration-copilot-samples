@@ -27,10 +27,28 @@ public class MainSQL {
             return;
         }
 
-        String connString = properties.getProperty("AZURE_SQLDB_CONNECTIONSTRING");
+        String connString = properties.getProperty("spring.datasource.url");
         String clientId = properties.getProperty("AZURE_CLIENT_ID");
         
-        connString = connString + ";msiClientId=" + clientId + ";authentication=ActiveDirectoryMSI";
+        // Resolve environment variable placeholders
+        if (connString != null) {
+            String serverName = System.getenv("AZ_DATABASE_SERVER_NAME");
+            if (serverName != null) {
+                connString = connString.replace("${AZ_DATABASE_SERVER_NAME}", serverName);
+            }
+        }
+        
+        if (clientId != null) {
+            String envClientId = System.getenv("AZURE_CLIENT_ID");
+            if (envClientId != null) {
+                clientId = clientId.replace("${AZURE_CLIENT_ID}", envClientId);
+            }
+        }
+        
+        // Add client ID for managed identity if specified and not placeholder
+        if (clientId != null && !clientId.contains("${") && !clientId.equals("<your managed identity client id>")) {
+            connString = connString + ";msiClientId=" + clientId;
+        }
         System.out.print(connString);
         
         SQLServerDataSource ds = new SQLServerDataSource();
