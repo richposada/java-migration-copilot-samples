@@ -11,6 +11,29 @@ import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 
 public class MainSQL {
 
+    /**
+     * Resolves environment variable placeholders in the format ${VAR_NAME}
+     */
+    private static String resolveEnvironmentVariables(String input) {
+        if (input == null) {
+            return null;
+        }
+        
+        String result = input;
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\$\\{([^}]+)\\}");
+        java.util.regex.Matcher matcher = pattern.matcher(input);
+        
+        while (matcher.find()) {
+            String envVar = matcher.group(1);
+            String envValue = System.getenv(envVar);
+            if (envValue != null) {
+                result = result.replace("${" + envVar + "}", envValue);
+            }
+        }
+        
+        return result;
+    }
+
 
     public static void main(String[] args) {
         
@@ -30,8 +53,12 @@ public class MainSQL {
         String connString = properties.getProperty("AZURE_SQLDB_CONNECTIONSTRING");
         String clientId = properties.getProperty("AZURE_CLIENT_ID");
         
+        // Resolve environment variables in connection string
+        connString = resolveEnvironmentVariables(connString);
+        clientId = resolveEnvironmentVariables(clientId);
+        
         connString = connString + ";msiClientId=" + clientId + ";authentication=ActiveDirectoryMSI";
-        System.out.print(connString);
+        System.out.println("Connection string: " + connString);
         
         SQLServerDataSource ds = new SQLServerDataSource();
         ds.setURL(connString);
